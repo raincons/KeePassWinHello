@@ -101,16 +101,8 @@ namespace KeePassWinHello
                 var keyPromptForm = e.Form as KeyPromptForm;
                 if (keyPromptForm != null)
                 {
-                    var keyManager = _keyManagerProvider.ObtainKeyManager();
-                    if (keyManager != null)
-                    {
-                        using (_uiContextManager.PushContext("Unlocking a database", keyPromptForm))
-                        {
-                            lock (_unlockMutex)
-                                keyManager.OnKeyPrompt(keyPromptForm);
-                            return;
-                        }
-                    }
+                    keyPromptForm.Shown -= KeyPromptFormOnShown; 
+                    keyPromptForm.Shown += KeyPromptFormOnShown; 
                 }
 
                 var optionsForm = e.Form as OptionsForm;
@@ -121,6 +113,28 @@ namespace KeePassWinHello
                     {
                         OptionsPanel.OnOptionsLoad(optionsForm, keyManager, _uiContextManager);
                         return;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _uiContextManager.CurrentContext.ShowError(ex);
+            }
+        }
+
+        private void KeyPromptFormOnShown(object sender, EventArgs e) {
+            try
+            {
+                var keyPromptForm = sender as KeyPromptForm;
+                if (keyPromptForm != null) 
+                {
+                    var keyManager = _keyManagerProvider.ObtainKeyManager();
+                    if (keyManager != null) 
+                    {
+                        using (_uiContextManager.PushContext("Unlocking a database", keyPromptForm)) {
+                            lock (_unlockMutex)
+                                keyManager.OnKeyPrompt(keyPromptForm);
+                        }
                     }
                 }
             }

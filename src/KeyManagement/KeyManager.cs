@@ -160,11 +160,9 @@ namespace KeePassWinHello
                 // It's expected not to throw exceptions
                 ClaimCurrentCacheType(AuthCacheType.Local);
                 _uiContextManager.CurrentContext.ShowError(ex, "Credential Manager storage has been turned off. Use Options dialog to turn it on.");
-                CloseFormWithResult(keyPromptForm, DialogResult.Cancel);
             }
             catch (AuthProviderUserCancelledException)
             {
-                CloseFormWithResult(keyPromptForm, DialogResult.Cancel);
             }
         }
 
